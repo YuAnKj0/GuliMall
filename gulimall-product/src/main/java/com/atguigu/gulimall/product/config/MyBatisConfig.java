@@ -6,9 +6,16 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
+/**
+ * @Description:
+ * @Created: with IntelliJ IDEA.
+ * @author: 夏沫止水
+ * @createTime: 2020-05-28 18:53
+ **/
+
 @Configuration
-@EnableTransactionManagement //开启事务
-@MapperScan("com.atguigu.gulimall.product.dao")
+@EnableTransactionManagement        //开启使用
+@MapperScan("com.xunqi.gulimall.product.dao")
 public class MyBatisConfig {
 
     //引入分页插件
@@ -16,9 +23,10 @@ public class MyBatisConfig {
     public PaginationInterceptor paginationInterceptor() {
         PaginationInterceptor paginationInterceptor = new PaginationInterceptor();
         // 设置请求的页面大于最大页后操作， true调回到首页，false 继续请求  默认false
-         paginationInterceptor.setOverflow(true);
+        paginationInterceptor.setOverflow(true);
         // 设置最大单页限制数量，默认 500 条，-1 不受限制
         paginationInterceptor.setLimit(1000);
         return paginationInterceptor;
     }
+
 }

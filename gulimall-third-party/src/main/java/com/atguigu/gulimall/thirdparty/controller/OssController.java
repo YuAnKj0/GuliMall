@@ -21,9 +21,9 @@ public class OssController {
     @Autowired
     OSS ossClient;
 
-    @Value("${spring.cloud.alicloud.oss.endpoint}")
+    @Value("spring.cloud.alicloud.oss.endpoint")
     private String endpoint;
-    @Value("${spring.cloud.alicloud.oss.bucket}")
+    @Value("spring.cloud.alicloud.oss.bucket")
     private String bucket;
 
     @Value("${spring.cloud.alicloud.access-key}")
@@ -35,7 +35,7 @@ public class OssController {
 
 
 
-        //https://gulimall-hello.oss-cn-beijing.aliyuncs.com/hahaha.jpg
+        //https://gulimallyuanstudy.oss-cn-hangzhou.aliyuncs.com/0baef6d9880511ebb6edd017c2d2eca2.png
 
         String host = "https://" + bucket + "." + endpoint; // host的格式为 bucketname.endpoint
         // callbackUrl为 上传回调服务器的URL，请将下面的IP和Port配置为您自己的真实信息。

@@ -1,5 +1,6 @@
 package com.atguigu.gulimall.product;
 
+
 import com.atguigu.gulimall.product.entity.BrandEntity;
 import com.atguigu.gulimall.product.entity.CategoryEntity;
 import com.atguigu.gulimall.product.service.BrandService;
@@ -8,8 +9,10 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.io.FileInputStream;
@@ -33,10 +36,17 @@ public class GulimallProductApplicationTests {
 
     @Autowired
     BrandService brandService;
+    //@Autowired
+    //OSSClient ossClient;
 
 
     @Autowired
     CategoryService categoryService;
+    @Autowired
+    StringRedisTemplate stringRedisTemplate;
+    
+    @Autowired
+    RedissonClient redissonClient;
 
     @Test
     public void testFindPath(){
@@ -66,5 +76,27 @@ public class GulimallProductApplicationTests {
         });
 
     }
+    
+  /*  @Test
+    public void FileUpLoad() throws FileNotFoundException {
+        InputStream inputStream=new FileInputStream("D:\\test\\pic\\0baef6d9880511ebb6edd017c2d2eca2.png");
+        ossClient.putObject("gulimallyuanstudy","0baef6d9880511ebb6edd017c2d2eca2.png",inputStream);
+        
+        ossClient.shutdown();
+        System.out.println("上传完成。。。。。");
+    }*/
+    
+    @Test
+    public void testRedis(){
+        stringRedisTemplate.opsForValue().set("asdfasdfaf","sdfasdfasdfds");
+        
+    }
+    
+    @Test
+    public void testRedisson(){
+        System.out.println(redissonClient);
+    }
+    
+    
 
 }
