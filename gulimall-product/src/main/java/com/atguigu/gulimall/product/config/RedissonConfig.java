@@ -24,3 +24,6 @@ public class RedissonConfig {
         return client;
     }
 }
+    
+    
+    
