@@ -1,20 +1,19 @@
 package com.atguigu.gulimall.member.controller;
 
-import java.util.Arrays;
-import java.util.Map;
-
-import com.atguigu.gulimall.member.feign.CouponFeignService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
-import com.atguigu.gulimall.member.entity.MemberEntity;
-import com.atguigu.gulimall.member.service.MemberService;
+import com.atguigu.common.exception.BizCodeEnume;
 import com.atguigu.common.utils.PageUtils;
 import com.atguigu.common.utils.R;
+import com.atguigu.gulimall.member.entity.MemberEntity;
+import com.atguigu.gulimall.member.excepition.PhoneExitException;
+import com.atguigu.gulimall.member.excepition.UsernameExitException;
+import com.atguigu.gulimall.member.feign.CouponFeignService;
+import com.atguigu.gulimall.member.service.MemberService;
+import com.atguigu.gulimall.member.vo.UserRegisterVo;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Arrays;
+import java.util.Map;
 
 
 
@@ -33,6 +32,33 @@ public class MemberController {
 
     @Autowired
     CouponFeignService couponFeignService;
+    
+    
+    @PostMapping(value = "/register")
+    public R register(@RequestBody UserRegisterVo vo){
+        try {
+            memberService.register(vo);
+        }catch (PhoneExitException e){
+            return R.error(BizCodeEnume.USER_EXIST_EXCEPTION.getCode(), BizCodeEnume.USER_EXIST_EXCEPTION.getMsg());
+        }catch (UsernameExitException e){
+            return R.error(BizCodeEnume.PHONE_EXIT_EXCEPTION.getCode(), BizCodeEnume.PHONE_EXIT_EXCEPTION.getMsg());
+        }
+        return R.ok();
+    }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
 
     @RequestMapping("/coupons")
     public R test(){
@@ -99,5 +125,7 @@ public class MemberController {
 
         return R.ok();
     }
+    
+    
 
 }

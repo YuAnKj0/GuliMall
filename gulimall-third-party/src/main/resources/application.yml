@@ -9,6 +9,13 @@ spring:
       oss:
         endpoint: oss-cn-hangzhou.aliyuncs.com
         bucket: gulimallyuanstudy
+      sms:
+        accessKeyId: LTAI5tP3VgUxMutpUUZb7UDM
+        accessKeySecret: Ic94qHuhFeuHhn2o4z3IYEtODqfGhN
+        regionId: cn-zhangjiakou
+        endpointOverride: dysmsapi.aliyuncs.com
+        signName: 阿里云短信测试
+        templateCode: SMS_154950909
 
   application:
     name: gulimall-third-party

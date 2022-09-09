@@ -24,9 +24,3 @@ public class RedissonConfig {
         return client;
     }
 }
-<<<<<<< Updated upstream
-    
-    
-    
-=======
->>>>>>> Stashed changes

@@ -1,10 +1,22 @@
 package com.atguigu.gulimall.product.service.impl;
 
+import com.atguigu.gulimall.product.entity.SkuImagesEntity;
+import com.atguigu.gulimall.product.entity.SpuInfoDescEntity;
+import com.atguigu.gulimall.product.feign.SeckillFeignService;
+import com.atguigu.gulimall.product.service.*;
+import com.atguigu.gulimall.product.vo.SkuItemSaleAttrVo;
+import com.atguigu.gulimall.product.vo.SkuItemVo;
+import com.atguigu.gulimall.product.vo.SpuItemAttrGroupVo;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ThreadPoolExecutor;
+
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -13,13 +25,32 @@ import com.atguigu.common.utils.Query;
 
 import com.atguigu.gulimall.product.dao.SkuInfoDao;
 import com.atguigu.gulimall.product.entity.SkuInfoEntity;
-import com.atguigu.gulimall.product.service.SkuInfoService;
 import org.springframework.util.StringUtils;
+
+import javax.annotation.Resource;
 
 
 @Service("skuInfoService")
 public class SkuInfoServiceImpl extends ServiceImpl<SkuInfoDao, SkuInfoEntity> implements SkuInfoService {
 
+    @Resource
+    public ThreadPoolExecutor executor;
+    @Resource
+    private SkuSaleAttrValueService skuSaleAttrValueService;
+    @Resource
+    private SpuInfoDescService spuInfoDescService;
+    
+    @Resource
+    private AttrGroupService attrGroupService;
+    @Resource
+    private SkuImagesService skuImagesService;
+    @Autowired
+    private SeckillFeignService seckillFeignService;
+    
+    
+    
+    
+    
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
         IPage<SkuInfoEntity> page = this.page(
@@ -98,6 +129,66 @@ public class SkuInfoServiceImpl extends ServiceImpl<SkuInfoDao, SkuInfoEntity> i
         
         
         return list;
+    }
+    
+    @Override
+    public SkuItemVo item(Long skuId) {
+        SkuItemVo skuItemVo=new SkuItemVo();
+    
+        //1、sku基本信息的获取  pms_sku_info
+        CompletableFuture<SkuInfoEntity> infoFuture=CompletableFuture.supplyAsync(()->{
+            SkuInfoEntity info = this.getById(skuId);
+            skuItemVo.setInfo(info);
+            return info;
+        },executor);
+    
+        //3、获取spu的销售属性组合
+        CompletableFuture<Void> saleAttrFuture=infoFuture.thenAcceptAsync((res)->{
+            List<SkuItemSaleAttrVo> saleAttrVos = skuSaleAttrValueService.getSaleAttrBySpuId(res.getSpuId());
+            skuItemVo.setSaleAttr(saleAttrVos);
+        },executor);
+    
+        //4、获取spu的介绍    pms_spu_info_desc
+        CompletableFuture<Void> descFuture = infoFuture.thenAcceptAsync((res) -> {
+            SpuInfoDescEntity spuInfoDescEntity = spuInfoDescService.getById(res.getSpuId());
+            skuItemVo.setDesc(spuInfoDescEntity);
+        }, executor);
+    
+        //5、获取spu的规格参数信息
+        CompletableFuture<Void> baseAttrFuture = infoFuture.thenAcceptAsync((res) -> {
+            List<SpuItemAttrGroupVo> attrGroupVos = attrGroupService.getAttrGroupWithAttrsBySpuId(res.getSpuId(), res.getCatalogId());
+            skuItemVo.setGroupAttrs(attrGroupVos);
+        }, executor);
+    
+        //2、sku的图片信息    pms_sku_images
+        CompletableFuture<Void> imageFuture = CompletableFuture.runAsync(() -> {
+            List<SkuImagesEntity> imagesEntities = skuImagesService.getImagesBySkuId(skuId);
+            skuItemVo.setImages(imagesEntities);
+        }, executor);
+    
+        // TODO 3、远程调用查询当前sku是否参与秒杀优惠活动
+        //CompletableFuture.runAsync(()->{
+        //    seckillFeignService
+        //},executor);
+        
+        
+        
+        
+        
+        
+        
+    
+        //等到所有任务都完成
+        try {
+            CompletableFuture.allOf(saleAttrFuture,descFuture,baseAttrFuture,imageFuture).get();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        } catch (ExecutionException e) {
+            throw new RuntimeException(e);
+        }
+        //CompletableFuture.allOf(saleAttrFuture,descFuture,baseAttrFuture,imageFuture,seckillFuture).get();
+        
+        return skuItemVo;
     }
     
 }
