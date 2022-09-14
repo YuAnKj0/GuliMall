@@ -8,14 +8,20 @@
 
 package com.atguigu.common.vo;
 
+import lombok.Data;
+
 import java.io.Serializable;
 import java.util.Date;
+
+
 
 /**
  * @author Ykj
  * @date 2022/9/9/17:49
  * @apiNote
  */
+
+@Data
 public class MemberResponseVo implements Serializable {
     
     private static final long serialVersionUID = 5573669251256409786L;

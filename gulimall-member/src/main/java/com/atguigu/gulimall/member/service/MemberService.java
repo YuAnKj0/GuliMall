@@ -1,5 +1,6 @@
 package com.atguigu.gulimall.member.service;
 
+import com.atguigu.gulimall.member.vo.SocialUser;
 import com.atguigu.gulimall.member.vo.UserRegisterVo;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.atguigu.common.utils.PageUtils;
@@ -19,5 +20,7 @@ public interface MemberService extends IService<MemberEntity> {
     PageUtils queryPage(Map<String, Object> params);
     
     void register(UserRegisterVo vo);
+    
+    MemberEntity login(SocialUser socialUser) throws Exception;
 }
 

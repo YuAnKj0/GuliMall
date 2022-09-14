@@ -8,6 +8,7 @@ import com.atguigu.gulimall.member.excepition.PhoneExitException;
 import com.atguigu.gulimall.member.excepition.UsernameExitException;
 import com.atguigu.gulimall.member.feign.CouponFeignService;
 import com.atguigu.gulimall.member.service.MemberService;
+import com.atguigu.gulimall.member.vo.SocialUser;
 import com.atguigu.gulimall.member.vo.UserRegisterVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -44,6 +45,11 @@ public class MemberController {
             return R.error(BizCodeEnume.PHONE_EXIT_EXCEPTION.getCode(), BizCodeEnume.PHONE_EXIT_EXCEPTION.getMsg());
         }
         return R.ok();
+    }
+    
+    @PostMapping(value = "/member/member/oauth2/login")
+    public R oauthLogin(@RequestBody SocialUser socialUser){
+        MemberEntity memberEntity=memberService.login(socialUser);
     }
     
     
